@@ -1,7 +1,6 @@
 package com.example.listycity
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -22,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,6 +35,7 @@ fun CityListScreen(
     cities: List<City>,
     onAddCity: (City) -> Unit,
     onUpdateCity: (City, City) -> Unit,
+    onDeleteCity: (City) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var newCityName by remember { mutableStateOf("") }
@@ -43,9 +47,30 @@ fun CityListScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            modifier = Modifier.fillMaxWidth()
         ) {
+            val isDeleteEnabled = (selectedCity != null) //Show delete button only if a city is selected
+            FloatingActionButton(
+                modifier = Modifier.padding(16.dp),
+                onClick = {
+                    if (isDeleteEnabled) {
+                        onDeleteCity(selectedCity!!)
+                        selectedCity = null
+                        editedCityName = ""
+                        editedProvinceName = ""
+                    }
+                },
+                containerColor = if (isDeleteEnabled) Color(0xFFEF5350) else Color.LightGray,  //set button color red if delete is enabled, else gray
+                contentColor = if (isDeleteEnabled) Color.White else Color.DarkGray
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete City"
+                )
+            }
+            
+            Spacer(modifier = Modifier.weight(1f))
+
             FloatingActionButton(
                 modifier = Modifier.padding(16.dp),
                 onClick = {
@@ -213,7 +238,8 @@ fun CityListScreenPreview() {
                 City("Calgary", "AB")
             ),
             onAddCity = {},
-            onUpdateCity = { _, _ -> }
+            onUpdateCity = { _, _ -> },
+            onDeleteCity = {}
         )
     }
 }
